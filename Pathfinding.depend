@@ -388,3 +388,6 @@
 1391956022 source:z:\programming\githubrepositories\pathfinding\src\square.cpp
 	"Square.hpp"
 
+1391977886 source:z:\programming\githubrepositories\pathfinding\src\core\game.cpp
+	"Core/Game.hpp"
+

@@ -124,10 +124,10 @@ void Game::update(const sf::Time& delta)
     m_UpdateCalls++;
 
     if (m_LeftMouseClicked &&
-         sf::Mouse::getPosition().x >= 0 &&
-         sf::Mouse::getPosition().x <= 1024 &&
-         sf::Mouse::getPosition().y >= 0 &&
-         sf::Mouse::getPosition().y <= 1024)
+         sf::Mouse::getPosition(m_RenderWindow).x >= 0 &&
+         sf::Mouse::getPosition(m_RenderWindow).x <= 1024 &&
+         sf::Mouse::getPosition(m_RenderWindow).y >= 0 &&
+         sf::Mouse::getPosition(m_RenderWindow).y <= 1024)
     {
         sf::Vector2u facePos = m_Map.getFacePos(sf::Vector2f(sf::Mouse::getPosition(m_RenderWindow)));
         sf::Color faceColor = m_Map.getSquare(facePos).rs.getFillColor();
@@ -209,6 +209,24 @@ void Game::calculatePath()
     m_OpenList.erase(m_OpenList.begin());
     m_ClosedList.push_back(m_StartPos);
 
+    sf::Vector2i lowestCostFacePos(-1, -1);
+    unsigned int lowestCost = 0;
+    for (auto pos : v)
+    {
+        Square& sqr = m_Map.getSquare(pos);
+        unsigned int cost = m_Map.fromString(sqr.totalCost.getString());
+
+        if (lowestCostFacePos == sf::Vector2i(-1, -1)) lowestCostFacePos = sf::Vector2i(pos);
+        if (lowestCost == 0) lowestCost = cost;
+
+        if (lowestCost >= cost)
+        {
+            lowestCost = cost;
+            lowestCostFacePos = sf::Vector2i(pos);
+        }
+    }
+
+    std::cout << "lowest cost = " << lowestCost << "\n";
 
     //...
 
@@ -230,7 +248,7 @@ std::vector<sf::Vector2u> Game::filterAdjacentFaces(std::vector<sf::Vector2u> ad
 {
     adjacentFaces.erase(std::remove_if(adjacentFaces.begin(), adjacentFaces.end(), [&] (sf::Vector2u const& pos)
     {
-        return m_Map.getSquare(pos).rs.getFillColor() == sf::Color(40, 40, 40);
+        return m_Map.getSquare(pos).rs.getFillColor() == sf::Color(60, 60, 60);
     }), adjacentFaces.end());
 
     std::cout << adjacentFaces.size() << "\n";
