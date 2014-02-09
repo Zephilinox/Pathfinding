@@ -148,7 +148,7 @@ void Game::update(const sf::Time& delta)
 
             if (m_CurrentColor == sf::Color::White)
             {
-                if (faceColor == sf::Color::Black)
+                if (faceColor == sf::Color(60, 60, 60))
                 {
                     m_Map.getSquare(facePos).rs.setFillColor(sf::Color::White);
                 }
