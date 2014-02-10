@@ -163,10 +163,15 @@ void Game::update(const sf::Time& delta)
         }
 
         m_LeftMouseClicked = false;
+        resetGrid();
         calculatePath();
     }
 
-
+    if (m_RightMouseClicked)
+    {
+        resetGrid();
+        m_RightMouseClicked = false;
+    }
 }
 
 void Game::display()
@@ -302,4 +307,23 @@ std::vector<sf::Vector2u> Game::filterAdjacentFaces(std::vector<sf::Vector2u> ad
     std::cout << adjacentFaces.size() << "\n";
 
     return adjacentFaces;
+}
+
+void Game::resetGrid()
+{
+    for (unsigned int i = 0; i < 15; ++i)
+    {
+        for (unsigned int j = 0; j < 15; ++j)
+        {
+            Square& sqr = m_Map.getSquare(sf::Vector2u(j, i));
+            sqr.movementCost.setString("0");
+            sqr.heuristicCost.setString("0");
+            sqr.totalCost.setString("0");
+
+            if (sqr.rs.getFillColor() == sf::Color::Yellow || sqr.rs.getFillColor() == sf::Color(50, 250, 50))
+            {
+                sqr.rs.setFillColor(sf::Color::White);
+            }
+        }
+    }
 }

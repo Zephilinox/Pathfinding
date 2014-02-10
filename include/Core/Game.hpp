@@ -25,6 +25,8 @@ private:
     unsigned int calculateManhattanDistance(const sf::Vector2u& startPos, const sf::Vector2u& endPos);
     std::vector<sf::Vector2u> filterAdjacentFaces(std::vector<sf::Vector2u> adjacentFaces);
 
+    void resetGrid();
+
     sf::RenderWindow m_RenderWindow;
     sf::Clock m_FrameTimer;
     sf::Time m_TimeSinceLastUpdate;
