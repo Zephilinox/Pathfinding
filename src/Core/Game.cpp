@@ -18,7 +18,7 @@ Game::Game()
 
     m_Map.getSquare(m_StartPos).heuristicCost.setString(m_Map.toString(calculateManhattanDistance(m_StartPos, m_TargetPos)));
 
-    calculatePath();
+    //calculatePath();
 }
 
 void Game::run()
@@ -136,11 +136,11 @@ void Game::update(const sf::Time& delta)
         {
             if (m_CurrentColor == sf::Color(127, 127, 127, 127))
             {
-                if (faceColor == sf::Color::White)
+                if (faceColor != sf::Color(60, 60, 60))
                 {
                     m_CurrentColor = sf::Color::Black;
                 }
-                else if (faceColor == sf::Color(60, 60, 60))
+                else if (faceColor != sf::Color::White)
                 {
                     m_CurrentColor = sf::Color::White;
                 }
@@ -148,14 +148,14 @@ void Game::update(const sf::Time& delta)
 
             if (m_CurrentColor == sf::Color::White)
             {
-                if (faceColor == sf::Color(60, 60, 60))
+                if (faceColor != sf::Color::White)
                 {
                     m_Map.getSquare(facePos).rs.setFillColor(sf::Color::White);
                 }
             }
             else if (m_CurrentColor == sf::Color::Black)
             {
-                if (faceColor == sf::Color::White)
+                if (faceColor != sf::Color(60, 60, 60))
                 {
                     m_Map.getSquare(facePos).rs.setFillColor(sf::Color(60, 60, 60));
                 }
@@ -163,7 +163,10 @@ void Game::update(const sf::Time& delta)
         }
 
         m_LeftMouseClicked = false;
+        calculatePath();
     }
+
+
 }
 
 void Game::display()
@@ -186,7 +189,7 @@ void Game::calculatePath()
         Square& sqr = m_Map.getSquare(pos);
         sqr.parentSquarePos = m_StartPos;
 
-        if (sqr.rs.getFillColor() != sf::Color::Red && sqr.rs.getFillColor() != sf::Color::Blue)
+        if (sqr.rs.getFillColor() != sf::Color(250, 50, 50) && sqr.rs.getFillColor() != sf::Color(0, 100, 250) && sqr.rs.getFillColor() != sf::Color(50, 250, 50) && sqr.rs.getFillColor() != sf::Color(60, 60, 60))
         {
             sqr.rs.setFillColor(sf::Color::Yellow);
         }
@@ -210,24 +213,64 @@ void Game::calculatePath()
     m_ClosedList.push_back(m_StartPos);
 
     sf::Vector2i lowestCostFacePos(-1, -1);
-    unsigned int lowestCost = 0;
-    for (auto pos : v)
+    while (lowestCostFacePos != sf::Vector2i(m_TargetPos))
     {
-        Square& sqr = m_Map.getSquare(pos);
-        unsigned int cost = m_Map.fromString(sqr.totalCost.getString());
-
-        if (lowestCostFacePos == sf::Vector2i(-1, -1)) lowestCostFacePos = sf::Vector2i(pos);
-        if (lowestCost == 0) lowestCost = cost;
-
-        if (lowestCost >= cost)
+        //Find square in open list with lowest cost
+        unsigned int lowestCost = 0;
+        for (auto pos : v)
         {
-            lowestCost = cost;
-            lowestCostFacePos = sf::Vector2i(pos);
+            Square& sqr = m_Map.getSquare(pos);
+            unsigned int cost = m_Map.fromString(sqr.totalCost.getString());
+
+            if (lowestCostFacePos == sf::Vector2i(-1, -1)) lowestCostFacePos = sf::Vector2i(pos);
+            if (lowestCost == 0) lowestCost = cost;
+
+            if (lowestCost >= cost)
+            {
+                lowestCost = cost;
+                lowestCostFacePos = sf::Vector2i(pos);
+            }
+        }
+
+        std::cout << "lowest cost = " << lowestCost << "\n";
+
+        //Remove it from open, add it to closed
+        v.erase(std::remove_if(v.begin(), v.end(), [&](const sf::Vector2u& pos)
+        {
+            return pos == sf::Vector2u(lowestCostFacePos);
+        }), v.end());
+
+        m_ClosedList.push_back(sf::Vector2u(lowestCostFacePos));
+        if (sf::Vector2u(lowestCostFacePos) != m_TargetPos) m_Map.getSquare(sf::Vector2u(lowestCostFacePos)).rs.setFillColor(sf::Color(50, 250, 50));
+
+        v = filterAdjacentFaces(m_Map.findAdjacentFaces(sf::Vector2u(lowestCostFacePos)));
+
+        for (auto pos : v)
+        {
+            Square& sqr = m_Map.getSquare(pos);
+            sqr.parentSquarePos = sf::Vector2u(lowestCostFacePos);
+
+            if (sqr.rs.getFillColor() != sf::Color(250, 50, 50) && sqr.rs.getFillColor() != sf::Color(0, 100, 250) && sqr.rs.getFillColor() != sf::Color(50, 250, 50) && sqr.rs.getFillColor() != sf::Color(60, 60, 60))
+            {
+                sqr.rs.setFillColor(sf::Color::Yellow);
+            }
+
+            if (pos.x != sqr.parentSquarePos.x && pos.y != sqr.parentSquarePos.y) //diagonal
+            {
+                sqr.movementCost.setString("14");
+            }
+            else
+            {
+                sqr.movementCost.setString("10");
+            }
+
+            sqr.heuristicCost.setString(m_Map.toString(calculateManhattanDistance(pos, m_TargetPos)));
+            sqr.totalCost.setString(m_Map.toString(m_Map.fromString(sqr.heuristicCost.getString()) + m_Map.fromString(sqr.movementCost.getString())));
+
+            m_OpenList.push_back(pos);
+            display(); //TODO: REFACTOR
         }
     }
-
-    std::cout << "lowest cost = " << lowestCost << "\n";
-
     //...
 
     m_OpenList.clear();
@@ -246,8 +289,13 @@ unsigned int Game::calculateManhattanDistance(const sf::Vector2u& startPos, cons
 
 std::vector<sf::Vector2u> Game::filterAdjacentFaces(std::vector<sf::Vector2u> adjacentFaces)
 {
-    adjacentFaces.erase(std::remove_if(adjacentFaces.begin(), adjacentFaces.end(), [&] (sf::Vector2u const& pos)
+    adjacentFaces.erase(std::remove_if(adjacentFaces.begin(), adjacentFaces.end(), [&] (const sf::Vector2u& pos)
     {
+        for (auto it = m_ClosedList.begin(); it != m_ClosedList.end(); ++it)
+        {
+            if (*it == pos) return false;
+        }
+
         return m_Map.getSquare(pos).rs.getFillColor() == sf::Color(60, 60, 60);
     }), adjacentFaces.end());
 
