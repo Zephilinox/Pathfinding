@@ -8,15 +8,14 @@
 
 //SELF
 
-class Tile //: public sf::Drawable
+class Tile : public sf::Drawable
 {
 public:
-    Tile();
     Tile(sf::Vector2f pos);
-    //virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 private:
-    sf::Sprite m_Square;
+    sf::RectangleShape m_Square;
 };
 
 #endif //TILE_HPP

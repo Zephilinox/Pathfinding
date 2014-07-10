@@ -16,9 +16,9 @@ void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     for (auto& row : m_Tiles)
     {
-        for (auto& tile : row)
+        for (auto tile : row)
         {
-            //target.draw(*tile.get(), states);
+            target.draw(tile, states);
         }
     }
 }
@@ -26,19 +26,15 @@ void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const
 void Map::createMap()
 {
     m_Tiles.clear();
-    m_Tiles.resize(960/16);
-    /*for (unsigned i = 0; i < m_Tiles.size(); ++i)
-    {
-        m_Tiles[i].resize(960/16);
-    }*/
 
-    for (unsigned h = 0; h <= 960/16; ++h)
+    for (unsigned h = 0; h < 960/16; ++h)
     {
-        for (unsigned w = 0; w <= 960/16; ++w)
+        std::vector<Tile> row;
+        for (unsigned w = 0; w < 960/16; ++w)
         {
-            //std::shared_ptr<Tile> tile(new Tile(sf::Vector2f(w * 16, h * 16)));
-            Tile tile;
-            m_Tiles[h].push_back(tile);
+            Tile tile(sf::Vector2f(w*16, h*16));
+            row.push_back(tile);
         }
+        m_Tiles.push_back(row);
     }
 }
