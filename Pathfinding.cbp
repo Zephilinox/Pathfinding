@@ -53,6 +53,7 @@
 		<Linker>
 			<Add directory="Z:/Programming/C++/SFML-2.1/lib" />
 		</Linker>
+		<Unit filename="include/Constants.h" />
 		<Unit filename="include/Map.hpp" />
 		<Unit filename="include/Node.hpp" />
 		<Unit filename="include/Tile.hpp" />

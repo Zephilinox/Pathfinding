@@ -7,16 +7,17 @@
 
 //SELF
 #include "Map.hpp"
+#include "Constants.h"
 
 void handleEvent(sf::Event& e, sf::RenderWindow& window);
-void update(const float dt);
-void draw(sf::RenderWindow& window, Map& map);
+void update(const float dt, sf::RenderWindow& window);
+void draw(sf::RenderWindow& window);
+
+Map map;
 
 int main()
 {
-    Map map;
-
-    sf::RenderWindow window(sf::VideoMode(960, 960), "Pathfinding");
+    sf::RenderWindow window(sf::VideoMode(Constant::windowWidth, Constant::windowHeight), "Pathfinding");
 
     sf::Clock frameTime;
     sf::Time prevFrameTime = sf::seconds(1.f / 60.f);
@@ -28,9 +29,9 @@ int main()
         window.pollEvent(event);
         handleEvent(event, window);
 
-        update(prevFrameTime.asSeconds());
+        update(prevFrameTime.asSeconds(), window);
 
-        draw(window, map);
+        draw(window);
     }
 
     return 0;
@@ -38,6 +39,8 @@ int main()
 
 void handleEvent(sf::Event& e, sf::RenderWindow& window)
 {
+    map.handleEvent(e, window);
+
     switch (e.type)
     {
         case (sf::Event::Closed):
@@ -53,12 +56,12 @@ void handleEvent(sf::Event& e, sf::RenderWindow& window)
     }
 }
 
-void update(const float dt)
+void update(const float dt, sf::RenderWindow& window)
 {
-
+    map.update(dt, window);
 }
 
-void draw(sf::RenderWindow& window, Map& map)
+void draw(sf::RenderWindow& window)
 {
     window.clear(sf::Color(40, 40, 40));
     window.draw(map);
