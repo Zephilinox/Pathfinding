@@ -7,6 +7,9 @@
 #include <SFML/Graphics.hpp>
 
 //SELF
+#include "Node.hpp"
+
+enum TileState {Unknown, Empty, Source, Target, Wall, Path, CheckedPath};
 
 class Tile : public sf::Drawable
 {
@@ -17,13 +20,15 @@ public:
     void update(const float dt, sf::RenderWindow& window);
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
+    void setState(TileState state);
+    TileState getState();
+
 private:
-    void toggleColour();
+    void updateColour();
+
+    TileState m_State;
 
     sf::RectangleShape m_Square;
-
-    sf::Clock m_ToggleColourCooldown;
-    sf::Time m_ToggleColourDelay;
 };
 
 #endif //TILE_HPP

@@ -8,7 +8,7 @@
 //SELF
 
 Tile::Tile(sf::Vector2f pos):
-m_ToggleColourDelay(sf::seconds(0.3f))
+m_State(TileState::Empty)
 {
     m_Square.setPosition(pos);
     m_Square.setSize(sf::Vector2f(16, 16));
@@ -29,21 +29,7 @@ void Tile::handleEvent(sf::Event& event, sf::RenderWindow& window)
 
 void Tile::update(const float dt, sf::RenderWindow& window)
 {
-    sf::Vector2i mousePosTile(sf::Mouse::getPosition(window).x / 16, sf::Mouse::getPosition(window).y / 16);
-    sf::Vector2i selfPosTile(m_Square.getPosition().x / 16, m_Square.getPosition().y / 16);
 
-    if (mousePosTile == selfPosTile)
-    {
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-        {
-            toggleColour();
-        }
-
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
-        {
-            m_Square.setFillColor(sf::Color::White);
-        }
-    }
 }
 
 void Tile::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -51,23 +37,63 @@ void Tile::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(m_Square, states);
 }
 
-void Tile::toggleColour()
+void Tile::setState(TileState state)
 {
-    if (m_ToggleColourCooldown.getElapsedTime().asSeconds() >= m_ToggleColourDelay.asSeconds())
-    {
-        m_ToggleColourCooldown.restart();
+    m_State = state;
 
-        if (m_Square.getFillColor() == sf::Color::White)
-        {
-            m_Square.setFillColor(sf::Color::Red);
-        }
-        else if (m_Square.getFillColor() == sf::Color::Red)
-        {
-            m_Square.setFillColor(sf::Color::Blue);
-        }
-        else if (m_Square.getFillColor() == sf::Color::Blue)
+    updateColour();
+}
+
+TileState Tile::getState()
+{
+    return m_State;
+}
+
+void Tile::updateColour()
+{
+    switch (m_State)
+    {
+        case TileState::Empty:
         {
             m_Square.setFillColor(sf::Color::White);
+            break;
+        }
+
+        case TileState::Source:
+        {
+            m_Square.setFillColor(sf::Color(50, 100, 200)); //Light Blue
+            break;
+        }
+
+        case TileState::Target:
+        {
+            m_Square.setFillColor(sf::Color(200, 50, 50)); //Light Red
+            break;
+        }
+
+        case TileState::Wall:
+        {
+            m_Square.setFillColor(sf::Color(100, 100, 100)); //Light Grey
+            break;
+        }
+
+        case TileState::Path:
+        {
+            m_Square.setFillColor(sf::Color(200, 180, 50)); //Light Orange
+            break;
+        }
+
+        case TileState::CheckedPath:
+        {
+            m_Square.setFillColor(sf::Color(50, 255, 180)); //Light Green
+            break;
+        }
+
+        default:
+        {
+            m_Square.setFillColor(sf::Color::Black);
+            std::cout << "Unknown TileState\n";
+            break;
         }
     }
 }

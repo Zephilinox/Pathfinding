@@ -12,6 +12,11 @@ class Node
 {
 public:
     Node();
+
+    int F;
+    int G;
+    int H;
+
 private:
 };
 
