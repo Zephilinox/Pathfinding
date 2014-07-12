@@ -5,8 +5,7 @@ namespace Constant
 {
     const unsigned windowWidth = 960;
     const unsigned windowHeight = 640;
-    const unsigned tileSize = 16;
-
+    const unsigned tileSize = 32;
 }
 
 

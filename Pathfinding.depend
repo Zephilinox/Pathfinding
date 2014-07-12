@@ -362,19 +362,20 @@
 1391956022 source:z:\programming\c++\!projects\sfml\pathfinding\src\square.cpp
 	"Square.hpp"
 
-1405024702 source:z:\programming\githubrepositories\pathfinding\main.cpp
+1405159593 source:z:\programming\githubrepositories\pathfinding\main.cpp
 	<iostream>
 	<vector>
 	"SFML/Graphics.hpp"
 	"Map.hpp"
-	"Constants.h"
+	"Constants.hpp"
+	"Pathfinder.hpp"
 
 1392018811 z:\programming\githubrepositories\pathfinding\include\core\game.hpp
 	<iostream>
 	<SFML/Graphics.hpp>
 	"Map.hpp"
 
-1405075790 z:\programming\githubrepositories\pathfinding\include\map.hpp
+1405157408 z:\programming\githubrepositories\pathfinding\include\map.hpp
 	<vector>
 	<memory>
 	<SFML/Graphics.hpp>
@@ -383,10 +384,10 @@
 1391974171 z:\programming\githubrepositories\pathfinding\include\square.hpp
 	<SFML/Graphics.hpp>
 
-1405075646 source:z:\programming\githubrepositories\pathfinding\src\map.cpp
+1405160489 source:z:\programming\githubrepositories\pathfinding\src\map.cpp
 	"Map.hpp"
 	<iostream>
-	"Constants.h"
+	"Constants.hpp"
 
 1391959622 source:z:\programming\githubrepositories\pathfinding\src\square.cpp
 	"Square.hpp"
@@ -394,18 +395,126 @@
 1392057347 source:z:\programming\githubrepositories\pathfinding\src\core\game.cpp
 	"Core/Game.hpp"
 
-1405075301 z:\programming\githubrepositories\pathfinding\include\tile.hpp
+1405156881 z:\programming\githubrepositories\pathfinding\include\tile.hpp
 	<SFML/Graphics.hpp>
 	"Node.hpp"
 
-1404980195 source:z:\programming\githubrepositories\pathfinding\src\node.cpp
+1405161276 source:z:\programming\githubrepositories\pathfinding\src\node.cpp
 	"Node.hpp"
+	<iostream>
 
-1405073039 z:\programming\githubrepositories\pathfinding\include\node.hpp
+1405160366 z:\programming\githubrepositories\pathfinding\include\node.hpp
+	<SFML/Graphics.hpp>
+	"ZGE/ResourceManagement/Resource.hpp"
+	"ZGE/Utility.hpp"
+	"Constants.hpp"
 
-1405074751 source:z:\programming\githubrepositories\pathfinding\src\tile.cpp
+1405161298 source:z:\programming\githubrepositories\pathfinding\src\tile.cpp
 	"Tile.hpp"
 	<iostream>
 
 1405023740 z:\programming\githubrepositories\pathfinding\include\constants.h
+
+1405161276 z:\programming\githubrepositories\pathfinding\include\constants.hpp
+
+1405158496 z:\programming\githubrepositories\pathfinding\include\pathfinder.hpp
+	<memory>
+	<SFML/Graphics.hpp>
+	"Map.hpp"
+	"Tile.hpp"
+
+1405160355 source:z:\programming\githubrepositories\pathfinding\src\pathfinder.cpp
+	"Pathfinder.hpp"
+	<iostream>
+
+1403863290 source:z:\programming\githubrepositories\pathfinding\src\zge\resourcemanagement\resource.cpp
+	"ZGE/ResourceManagement/Resource.hpp"
+	"ZGE/ResourceManagement/Resource.hpp"
+
+1403863150 z:\programming\githubrepositories\pathfinding\include\zge\resourcemanagement\resource.hpp
+	<string>
+	<memory>
+	<SFML/Audio.hpp>
+	"ResourceManager.hpp"
+	"ZGE/ResourceManagement/Resource.inl"
+
+1367997278 z:\programming\c++\sfml-2.1\include\sfml\audio.hpp
+	<SFML/System.hpp>
+	<SFML/Audio/Listener.hpp>
+	<SFML/Audio/Music.hpp>
+	<SFML/Audio/Sound.hpp>
+	<SFML/Audio/SoundBuffer.hpp>
+	<SFML/Audio/SoundBufferRecorder.hpp>
+	<SFML/Audio/SoundRecorder.hpp>
+	<SFML/Audio/SoundStream.hpp>
+
+1367997278 z:\programming\c++\sfml-2.1\include\sfml\audio\listener.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/System/Vector3.hpp>
+
+1367997278 z:\programming\c++\sfml-2.1\include\sfml\audio\export.hpp
+	<SFML/Config.hpp>
+
+1367997278 z:\programming\c++\sfml-2.1\include\sfml\audio\music.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/Audio/SoundStream.hpp>
+	<SFML/System/Mutex.hpp>
+	<SFML/System/Time.hpp>
+	<string>
+	<vector>
+
+1367997278 z:\programming\c++\sfml-2.1\include\sfml\audio\soundstream.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/Audio/SoundSource.hpp>
+	<SFML/System/Thread.hpp>
+	<SFML/System/Time.hpp>
+	<cstdlib>
+
+1367997278 z:\programming\c++\sfml-2.1\include\sfml\audio\soundsource.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/System/Vector3.hpp>
+
+1367997278 z:\programming\c++\sfml-2.1\include\sfml\audio\sound.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/Audio/SoundSource.hpp>
+	<SFML/System/Time.hpp>
+	<cstdlib>
+
+1367997278 z:\programming\c++\sfml-2.1\include\sfml\audio\soundbuffer.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/System/Time.hpp>
+	<string>
+	<vector>
+	<set>
+
+1367997278 z:\programming\c++\sfml-2.1\include\sfml\audio\soundbufferrecorder.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/Audio/SoundBuffer.hpp>
+	<SFML/Audio/SoundRecorder.hpp>
+	<vector>
+
+1367997278 z:\programming\c++\sfml-2.1\include\sfml\audio\soundrecorder.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/System/Thread.hpp>
+	<vector>
+
+1403863150 z:\programming\githubrepositories\pathfinding\include\zge\resourcemanagement\resourcemanager.hpp
+	<map>
+	<memory>
+	"ZGE/ResourceManagement/ResourceManager.inl"
+
+1405159218 z:\programming\githubrepositories\pathfinding\src\zge\resourcemanagement\resourcemanager.inl
+	<cassert>
+	<iostream>
+
+1405159258 z:\programming\githubrepositories\pathfinding\src\zge\resourcemanagement\resource.inl
+	<algorithm>
+	<locale>
+
+1404049215 source:z:\programming\githubrepositories\pathfinding\src\zge\utility.cpp
+	"ZGE/Utility.hpp"
+
+1405156858 z:\programming\githubrepositories\pathfinding\include\zge\utility.hpp
+	<sstream>
+	<SFML/Graphics.hpp>
 

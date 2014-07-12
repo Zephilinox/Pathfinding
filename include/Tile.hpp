@@ -9,7 +9,7 @@
 //SELF
 #include "Node.hpp"
 
-enum TileState {Unknown, Empty, Source, Target, Wall, Path, CheckedPath};
+enum class TileState {Unknown, Empty, Wall};
 
 class Tile : public sf::Drawable
 {
@@ -23,12 +23,16 @@ public:
     void setState(TileState state);
     TileState getState();
 
+    Node& getNode();
+
 private:
     void updateColour();
 
     TileState m_State;
 
     sf::RectangleShape m_Square;
+
+    Node m_Node;
 };
 
 #endif //TILE_HPP

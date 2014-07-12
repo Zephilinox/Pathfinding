@@ -6,12 +6,9 @@
 //3RD
 
 //SELF
-#include "Constants.h"
+#include "Constants.hpp"
 
-Map::Map():
-m_SourceTilePosition(-1, -1),
-m_TargetTilePosition(-1, -1),
-m_MouseClickDelay(sf::seconds(0.3f))
+Map::Map()
 {
     createMap();
 }
@@ -29,50 +26,11 @@ void Map::handleEvent(sf::Event& event, sf::RenderWindow& window)
 
 void Map::update(const float dt, sf::RenderWindow& window)
 {
-    sf::Vector2i mouseTilePos(sf::Mouse::getPosition(window).x / 16, sf::Mouse::getPosition(window).y / 16);
+    sf::Vector2i mouseTilePos(sf::Mouse::getPosition(window).x / Constant::tileSize, sf::Mouse::getPosition(window).y / Constant::tileSize);
 
     if (inMapBounds(mouseTilePos))
     {
         Tile& t = m_Tiles[mouseTilePos.y][mouseTilePos.x];
-
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left) &&
-            m_MouseClickCoolDown.getElapsedTime().asSeconds() >= m_MouseClickDelay.asSeconds())
-        {
-            m_MouseClickCoolDown.restart();
-
-            if (t.getState() == TileState::Empty ||
-                t.getState() == TileState::Wall)
-            {
-                if (m_SourceTilePosition == sf::Vector2i(-1, -1))
-                {
-                    t.setState(TileState::Source);
-                    m_SourceTilePosition = mouseTilePos;
-                }
-                else if (m_TargetTilePosition == sf::Vector2i(-1, -1))
-                {
-                    t.setState(TileState::Target);
-                    m_TargetTilePosition = mouseTilePos;
-                }
-            }
-            else if (t.getState() == TileState::Source)
-            {
-                if (m_TargetTilePosition == sf::Vector2i(-1, -1))
-                {
-                    t.setState(TileState::Target);
-                    m_TargetTilePosition = mouseTilePos;
-                    m_SourceTilePosition = sf::Vector2i(-1, -1);
-                }
-            }
-            else if (t.getState() == TileState::Target)
-            {
-                if (m_SourceTilePosition == sf::Vector2i(-1, -1))
-                {
-                    t.setState(TileState::Source);
-                    m_SourceTilePosition = mouseTilePos;
-                    m_TargetTilePosition = sf::Vector2i(-1, -1);
-                }
-            }
-        }
 
         if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
         {
@@ -86,15 +44,6 @@ void Map::update(const float dt, sf::RenderWindow& window)
                 {
                     m_MouseRightClickBrush = TileState::Empty;
                 }
-            }
-
-            if (t.getState() == TileState::Source)
-            {
-                m_SourceTilePosition = sf::Vector2i(-1, -1);
-            }
-            else if (t.getState() == TileState::Target)
-            {
-                m_TargetTilePosition = sf::Vector2i(-1, -1);
             }
 
             t.setState(m_MouseRightClickBrush);
@@ -112,6 +61,7 @@ void Map::update(const float dt, sf::RenderWindow& window)
             for (auto& tile : row)
             {
                 tile.setState(TileState::Empty);
+                tile.getNode().setState(NodeState::Unknown);
             }
         }
 
@@ -130,9 +80,9 @@ void Map::update(const float dt, sf::RenderWindow& window)
 
 void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    for (auto row : m_Tiles)
+    for (auto& row : m_Tiles)
     {
-        for (auto tile : row)
+        for (auto& tile : row)
         {
             target.draw(tile, states);
         }
@@ -142,21 +92,26 @@ void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const
 void Map::createMap()
 {
     m_Tiles.clear();
-    m_Tiles.reserve(60);
+    m_Tiles.reserve(Constant::windowHeight / Constant::tileSize);
 
-    for (unsigned h = 0; h < Constant::windowHeight/16; ++h)
+    for (unsigned h = 0; h < Constant::windowHeight / Constant::tileSize; ++h)
     {
         std::vector<Tile> row;
-        row.reserve(Constant::windowWidth/16);;
+        row.reserve(Constant::windowWidth / Constant::tileSize);;
 
-        for (unsigned w = 0; w < Constant::windowWidth/16; ++w)
+        for (unsigned w = 0; w < Constant::windowWidth / Constant::tileSize; ++w)
         {
-            Tile tile(sf::Vector2f(w*16, h*16));
+            Tile tile(sf::Vector2f(w * Constant::tileSize, h* Constant::tileSize));
             row.push_back(tile);
         }
 
         m_Tiles.push_back(row);
     }
+}
+
+Tile& Map::getTile(sf::Vector2i pos)
+{
+    return m_Tiles[pos.y][pos.x];
 }
 
 bool Map::inMapBounds(sf::Vector2i pos)

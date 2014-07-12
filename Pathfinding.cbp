@@ -53,13 +53,15 @@
 		<Linker>
 			<Add directory="Z:/Programming/C++/SFML-2.1/lib" />
 		</Linker>
-		<Unit filename="include/Constants.h" />
+		<Unit filename="include/Constants.hpp" />
 		<Unit filename="include/Map.hpp" />
 		<Unit filename="include/Node.hpp" />
+		<Unit filename="include/Pathfinder.hpp" />
 		<Unit filename="include/Tile.hpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/Map.cpp" />
 		<Unit filename="src/Node.cpp" />
+		<Unit filename="src/Pathfinder.cpp" />
 		<Unit filename="src/Tile.cpp" />
 		<Extensions>
 			<code_completion />

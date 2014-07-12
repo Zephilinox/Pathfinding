@@ -8,16 +8,21 @@
 //SELF
 
 Tile::Tile(sf::Vector2f pos):
-m_State(TileState::Empty)
+m_State(TileState::Empty),
+m_Node(pos)
 {
     m_Square.setPosition(pos);
-    m_Square.setSize(sf::Vector2f(16, 16));
-    m_Square.setOutlineThickness(1);
+    m_Square.setSize(sf::Vector2f(Constant::tileSize, Constant::tileSize));
+    m_Square.setOutlineThickness(2);
     m_Square.setOutlineColor(sf::Color::Black);
+
+    updateColour();
 }
 
 void Tile::handleEvent(sf::Event& event, sf::RenderWindow& window)
 {
+    m_Node.handleEvent(event, window);
+
     switch (event.type)
     {
         default:
@@ -29,12 +34,13 @@ void Tile::handleEvent(sf::Event& event, sf::RenderWindow& window)
 
 void Tile::update(const float dt, sf::RenderWindow& window)
 {
-
+    m_Node.update(dt, window);
 }
 
 void Tile::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(m_Square, states);
+    m_Node.draw(target, states);
 }
 
 void Tile::setState(TileState state)
@@ -45,8 +51,13 @@ void Tile::setState(TileState state)
 }
 
 TileState Tile::getState()
-{
+    {
     return m_State;
+}
+
+Node& Tile::getNode()
+{
+    return m_Node;
 }
 
 void Tile::updateColour()
@@ -59,33 +70,9 @@ void Tile::updateColour()
             break;
         }
 
-        case TileState::Source:
-        {
-            m_Square.setFillColor(sf::Color(50, 100, 200)); //Light Blue
-            break;
-        }
-
-        case TileState::Target:
-        {
-            m_Square.setFillColor(sf::Color(200, 50, 50)); //Light Red
-            break;
-        }
-
         case TileState::Wall:
         {
             m_Square.setFillColor(sf::Color(100, 100, 100)); //Light Grey
-            break;
-        }
-
-        case TileState::Path:
-        {
-            m_Square.setFillColor(sf::Color(200, 180, 50)); //Light Orange
-            break;
-        }
-
-        case TileState::CheckedPath:
-        {
-            m_Square.setFillColor(sf::Color(50, 255, 180)); //Light Green
             break;
         }
 
