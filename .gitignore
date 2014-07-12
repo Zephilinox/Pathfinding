@@ -25,5 +25,5 @@ obj/*
 gmon.out
 *.depend  
 *.layout
-Multiplayer_Asteroids.depend
-Multiplayer_Asteroids.layout
+Pathfinding.depend
+Pathfinding.layout
