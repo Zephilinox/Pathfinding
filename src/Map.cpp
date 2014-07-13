@@ -60,13 +60,9 @@ void Map::update(const float dt, sf::RenderWindow& window)
         {
             for (auto& tile : row)
             {
-                tile.setState(TileState::Empty);
-                tile.getNode().setState(NodeState::Unknown);
+                tile.reset();
             }
         }
-
-        m_SourceTilePosition = sf::Vector2i(-1, -1);
-        m_TargetTilePosition = sf::Vector2i(-1, -1);
     }
 
     for (auto& row : m_Tiles)
@@ -125,4 +121,9 @@ bool Map::inMapBounds(sf::Vector2i pos)
     }
 
     return true;
+}
+
+sf::Vector2i Map::worldToMapCoordinates(sf::Vector2f pos)
+{
+    return sf::Vector2i(pos.x / Constant::tileSize, pos.y / Constant::tileSize);
 }

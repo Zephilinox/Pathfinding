@@ -8,8 +8,11 @@
 //SELF
 
 Node::Node(sf::Vector2f pos):
+m_ParentNodePosition(sf::Vector2i(-1, -1)),
 m_State(NodeState::Unknown),
-m_Font("fonts/arial.ttf")
+m_Font("fonts/arial.ttf"),
+m_MovementCost(0),
+m_HeuristicCost(0)
 {
     m_Square.setPosition(pos);
     m_Square.setSize(sf::Vector2f(Constant::tileSize, Constant::tileSize));
@@ -27,15 +30,6 @@ m_Font("fonts/arial.ttf")
     m_F.setCharacterSize(10);
     m_G.setCharacterSize(10);
     m_H.setCharacterSize(10);
-
-    m_F.setPosition(pos.x + int((Constant::tileSize - m_F.getLocalBounds().width)/2) - m_F.getLocalBounds().left,
-                    pos.y - m_F.getLocalBounds().top + 2);
-
-    m_G.setPosition(pos.x + int((Constant::tileSize - m_G.getLocalBounds().width)/2) - m_G.getLocalBounds().left,
-                    pos.y + int((Constant::tileSize - m_G.getLocalBounds().height)/2) - m_G.getLocalBounds().top);
-
-    m_H.setPosition(pos.x + int((Constant::tileSize - m_H.getLocalBounds().width)/2) - m_H.getLocalBounds().left,
-                    pos.y + Constant::tileSize - m_H.getLocalBounds().height - m_H.getLocalBounds().top - 4);
 }
 
 void Node::handleEvent(sf::Event& event, sf::RenderWindow& window)
@@ -73,28 +67,60 @@ NodeState Node::getState()
     return m_State;
 }
 
-void Node::setMovementCost(int cost)
+void Node::setMovementCost(unsigned cost)
 {
     m_MovementCost = cost;
     m_G.setString(zge::toString(m_MovementCost));
     m_F.setString(zge::toString(m_MovementCost + m_HeuristicCost));
+
+    updateFStringPosition();
+    updateGStringPosition();
 }
 
-int Node::getMovementCost()
+unsigned Node::getMovementCost()
 {
     return m_MovementCost;
 }
 
-void Node::setHeuristicCost(int cost)
+void Node::setHeuristicCost(unsigned cost)
 {
     m_HeuristicCost = cost;
     m_H.setString(zge::toString(m_HeuristicCost));
     m_F.setString(zge::toString(m_MovementCost + m_HeuristicCost));
+
+    updateFStringPosition();
+    updateHStringPosition();
 }
 
-int Node::getHeuristicCost()
+unsigned Node::getHeuristicCost()
 {
     return m_HeuristicCost;
+}
+sf::Vector2f Node::getPosition()
+{
+    return m_Square.getPosition();
+}
+void Node::setParentNodePosition(sf::Vector2i pos)
+{
+    m_ParentNodePosition = pos;
+}
+
+sf::Vector2i Node::getParentNodePosition()
+{
+    return m_ParentNodePosition;
+}
+
+void Node::reset()
+{
+    m_MovementCost = 0;
+    m_HeuristicCost = 0;
+    m_ParentNodePosition = sf::Vector2i(-1, -1);
+
+    setState(NodeState::Unknown);
+
+    m_F.setString("");
+    m_G.setString("");
+    m_H.setString("");
 }
 
 void Node::updateColour()
@@ -109,25 +135,25 @@ void Node::updateColour()
 
         case NodeState::Source:
         {
-            m_Square.setFillColor(sf::Color(50, 100, 200)); //Light Blue
+            m_Square.setFillColor(sf::Color(100, 200, 255)); //Light Blue
             break;
         }
 
         case NodeState::Target:
         {
-            m_Square.setFillColor(sf::Color(200, 50, 50)); //Light Red
+            m_Square.setFillColor(sf::Color(255, 100, 100)); //Light Red
             break;
         }
 
-        case NodeState::Path:
+        case NodeState::OpenList:
         {
-            m_Square.setFillColor(sf::Color(200, 180, 50)); //Light Orange
+            m_Square.setFillColor(sf::Color(255, 200, 100)); //Light Orange
             break;
         }
 
-        case NodeState::CheckedPath:
+        case NodeState::ClosedList:
         {
-            m_Square.setFillColor(sf::Color(50, 255, 180)); //Light Green
+            m_Square.setFillColor(sf::Color(100, 255, 200)); //Light Green
             break;
         }
 
@@ -139,3 +165,23 @@ void Node::updateColour()
         }
     }
 }
+
+void Node::updateFStringPosition()
+{
+    m_F.setPosition(m_Square.getPosition().x + int((Constant::tileSize - m_F.getLocalBounds().width)/2) - m_F.getLocalBounds().left,
+                    (m_Square.getPosition().y - m_F.getLocalBounds().top + 2));
+}
+
+void Node::updateGStringPosition()
+{
+
+    m_G.setPosition(m_Square.getPosition().x + int((Constant::tileSize - m_G.getLocalBounds().width)/2) - m_G.getLocalBounds().left,
+                    (m_Square.getPosition().y + Constant::tileSize - m_G.getLocalBounds().height - m_G.getLocalBounds().top - 4));
+}
+
+void Node::updateHStringPosition()
+{
+    m_H.setPosition(m_Square.getPosition().x + int((Constant::tileSize - m_H.getLocalBounds().width)/2) - m_H.getLocalBounds().left,
+                    (m_Square.getPosition().y + int((Constant::tileSize - m_H.getLocalBounds().height)/2) - m_H.getLocalBounds().top));
+}
+

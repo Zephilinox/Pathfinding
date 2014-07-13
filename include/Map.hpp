@@ -22,15 +22,12 @@ public:
     Tile& getTile(sf::Vector2i pos);
 
     bool inMapBounds(sf::Vector2i pos);
+    sf::Vector2i worldToMapCoordinates(sf::Vector2f pos);
 
 private:
     void createMap();
 
     std::vector<std::vector<Tile>> m_Tiles;
-
-    sf::Vector2i m_SourceTilePosition;
-    sf::Vector2i m_TargetTilePosition;
-
 
     TileState m_MouseRightClickBrush;
 };

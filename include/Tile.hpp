@@ -25,6 +25,8 @@ public:
 
     Node& getNode();
 
+    void reset();
+
 private:
     void updateColour();
 

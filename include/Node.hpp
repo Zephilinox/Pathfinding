@@ -11,7 +11,7 @@
 #include "ZGE/Utility.hpp"
 #include "Constants.hpp"
 
-enum class NodeState {Unknown, Source, Target, Path, CheckedPath};
+enum class NodeState {Unknown, Source, Target, OpenList, ClosedList};
 
 class Node : public sf::Drawable
 {
@@ -25,14 +25,26 @@ public:
     void setState(NodeState state);
     NodeState getState();
 
-    void setMovementCost(int cost);
-    int getMovementCost();
+    void setMovementCost(unsigned cost);
+    unsigned getMovementCost();
 
-    void setHeuristicCost(int cost);
-    int getHeuristicCost();
+    void setHeuristicCost(unsigned cost);
+    unsigned getHeuristicCost();
+
+    sf::Vector2f getPosition();
+
+    void setParentNodePosition(sf::Vector2i pos);
+    sf::Vector2i getParentNodePosition();
+
+    void reset();
 
 private:
     void updateColour();
+    void updateFStringPosition();
+    void updateGStringPosition();
+    void updateHStringPosition();
+
+    sf::Vector2i m_ParentNodePosition;
 
     NodeState m_State;
 
@@ -44,8 +56,8 @@ private:
     sf::Text m_G;
     sf::Text m_H;
 
-    int m_MovementCost;
-    int m_HeuristicCost;
+    unsigned m_MovementCost;
+    unsigned m_HeuristicCost;
 };
 
 #endif //NODE_HPP

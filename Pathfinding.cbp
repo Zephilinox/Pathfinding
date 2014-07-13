@@ -12,10 +12,12 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-pg" />
 					<Add option="-g" />
 					<Add directory="include" />
 				</Compiler>
 				<Linker>
+					<Add option="-pg -lgmon" />
 					<Add library="sfml-audio-s-d" />
 					<Add library="sfml-graphics-s-d" />
 					<Add library="sfml-window-s-d" />
@@ -58,11 +60,20 @@
 		<Unit filename="include/Node.hpp" />
 		<Unit filename="include/Pathfinder.hpp" />
 		<Unit filename="include/Tile.hpp" />
+		<Unit filename="include/ZGE/ResourceManagement/Resource.hpp" />
+		<Unit filename="include/ZGE/ResourceManagement/ResourceCache.hpp" />
+		<Unit filename="include/ZGE/ResourceManagement/ResourceManager.hpp" />
+		<Unit filename="include/ZGE/Utility.hpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/Map.cpp" />
 		<Unit filename="src/Node.cpp" />
 		<Unit filename="src/Pathfinder.cpp" />
 		<Unit filename="src/Tile.cpp" />
+		<Unit filename="src/ZGE/ResourceManagement/Resource.cpp" />
+		<Unit filename="src/ZGE/ResourceManagement/Resource.inl" />
+		<Unit filename="src/ZGE/ResourceManagement/ResourceCache.inl" />
+		<Unit filename="src/ZGE/ResourceManagement/ResourceManager.inl" />
+		<Unit filename="src/ZGE/Utility.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

@@ -42,7 +42,7 @@ int main()
 
         draw(window);
 
-        std::cout << "FPS: " << 1.f / prevFrameTime.asSeconds() << "\n";
+        //std::cout << "FPS: " << 1.f / prevFrameTime.asSeconds() << "\n";
         prevFrameTime = frameTime.restart();
     }
 

@@ -60,6 +60,12 @@ Node& Tile::getNode()
     return m_Node;
 }
 
+void Tile::reset()
+{
+    m_Node.reset();
+    setState(TileState::Empty);
+}
+
 void Tile::updateColour()
 {
     switch (m_State)
