@@ -102,8 +102,8 @@ sf::Vector2f Node::getPosition()
 }
 void Node::setParentNodePosition(sf::Vector2i pos)
 {
-    sf::Vector2i thisPos = sf::Vector2i(m_Square.getPosition().x / Constant::tileSize, m_Square.getPosition().y / Constant::tileSize);
-    std::cout << "[" << thisPos.x << ", " << thisPos.y << "] -> [" << pos.x << ", " << pos.y << "]\n";
+    /*sf::Vector2i thisPos = sf::Vector2i(m_Square.getPosition().x / Constant::tileSize, m_Square.getPosition().y / Constant::tileSize);
+    std::cout << "[" << thisPos.x << ", " << thisPos.y << "] -> [" << pos.x << ", " << pos.y << "]\n";*/
     m_ParentNodePosition = pos;
 }
 

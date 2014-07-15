@@ -45,6 +45,8 @@ private:
 
     sf::Clock m_StepCooldown;
     sf::Time m_StepDelay;
+
+    bool m_PathFound;
 };
 
 #endif //PATHFINDER_HPP

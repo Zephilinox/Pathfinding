@@ -15,7 +15,8 @@ m_IntercardinalMovementCost(14),
 m_SourceNodePosition(-1, -1),
 m_TargetNodePosition(-1, -1),
 m_MouseClickDelay(sf::seconds(0.3f)),
-m_StepDelay(sf::seconds(0.01f))
+m_StepDelay(sf::seconds(0.01f)),
+m_PathFound(false)
 {
 
 }
@@ -108,11 +109,26 @@ void Pathfinder::update(const float dt, sf::RenderWindow& window)
     {
         m_OpenList.clear();
         m_ClosedList.clear();
+        m_PathFound = false;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) &&
+        m_StepCooldown.getElapsedTime().asSeconds() > m_StepDelay.asSeconds())
     {
+        m_StepCooldown.restart();
         step();
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Return) &&
+        !m_PathFound)
+    {
+        sf::Clock timer;
+        while (!m_PathFound)
+        {
+            step();
+        }
+
+        std::cout << "Path found in " << timer.getElapsedTime().asSeconds() << " seconds\n";
     }
 }
 
@@ -136,39 +152,32 @@ unsigned Pathfinder::calculateMovementCost(sf::Vector2i from, sf::Vector2i to)
 
 void Pathfinder::step()
 {
-    if (m_StepCooldown.getElapsedTime().asSeconds() > m_StepDelay.asSeconds())
-    {
-        m_StepCooldown.restart();
-    }
-    else
-    {
-        return;
-    }
+    if (m_PathFound) return;
 
-    std::cout << "\nStepping\n";
+    //std::cout << "\nStepping\n";
 
     if (!m_Map.inMapBounds(m_SourceNodePosition) || //Make sure the source and target are valid
         !m_Map.inMapBounds(m_TargetNodePosition))
     {
-        std::cout << "Source or Target is invalid\n";
+        //std::cout << "Source or Target is invalid\n";
         std::cout << m_SourceNodePosition.x << ", " << m_SourceNodePosition.y << "\n";
         std::cout << m_TargetNodePosition.x << ", " << m_TargetNodePosition.y << "\n";
         return;
     }
 
-    std::cout << "Source and Target are valid\n";
+    //std::cout << "Source and Target are valid\n";
 
     if (m_OpenList.size() == 0 &&
         m_ClosedList.size() == 0)
     {
-        std::cout << "Adding source node\n";
+        //std::cout << "Adding source node\n";
         m_OpenList.push_back(m_SourceNodePosition);
     }
     else if ((m_ClosedList.size() != 0 && //make sure there is an object at the back
              m_ClosedList.back() == m_TargetNodePosition) || //If the target is in the closed list then we found a path
              m_OpenList.size() == 0) //If the open list is empty then we have checked the entire map and not found a path
     {
-        std::cout << "Path found\n";
+        //std::cout << "Path found\n";
 
         //Reset the nodes we have modified
         for (sf::Vector2i pos : m_ClosedList)
@@ -187,7 +196,7 @@ void Pathfinder::step()
         sf::Vector2i parentPos = m_ClosedList.back();
         while (m_Map.inMapBounds(parentPos))
         {
-            std::cout << "Parent Position = [" << parentPos.x << ", " << parentPos.y << "]\n";
+            //std::cout << "Parent Position = [" << parentPos.x << ", " << parentPos.y << "]\n";
             m_Map.getTile(parentPos).getNode().setState(NodeState::ClosedList);
             parentPos = m_Map.getTile(parentPos).getNode().getParentNodePosition();
         }
@@ -195,10 +204,12 @@ void Pathfinder::step()
         //Draw source and target
         m_Map.getTile(m_ClosedList.front()).getNode().setState(NodeState::Source);
         m_Map.getTile(m_ClosedList.back()).getNode().setState(NodeState::Target);
+
+        m_PathFound = true;
     }
     else
     {
-        std::cout << "Finding lowest scored node\n";
+        //std::cout << "Finding lowest scored node\n";
         //Find node in open list with lowest score, and move it to closed list.
         unsigned lowestScoreNodeIndex = getLowestScoreNodeIndex(m_OpenList);
         m_ClosedList.push_back(m_OpenList[lowestScoreNodeIndex]);
@@ -214,7 +225,7 @@ void Pathfinder::step()
 
         m_OpenList.erase(m_OpenList.begin() + lowestScoreNodeIndex);
 
-        std::cout << "Finding adjacent nodes\n";
+        //std::cout << "Finding adjacent nodes\n";
         //Find adjacent nodes of current node
         auto adjNodePoses = getAdjacentNodes(m_ClosedList.back());
         for (sf::Vector2i& nodePos : adjNodePoses)
@@ -226,7 +237,7 @@ void Pathfinder::step()
 
                 if (std::find(m_OpenList.begin(), m_OpenList.end(), nodePos) == m_OpenList.end()) //is not on the open list
                 {
-                    std::cout << "Found undiscovered valid node\n";
+                    //std::cout << "Found undiscovered valid node\n";
                     //Recalculated costs and set parent node
                     updateNodeInfo(nodePos, m_ClosedList.back());
 
@@ -240,7 +251,7 @@ void Pathfinder::step()
                 }
                 else if (n.getMovementCost() > calculateMovementCost(m_ClosedList.back(), nodePos))//this path to the node is shorter
                 {
-                    std::cout << "Found better path\n";
+                    //std::cout << "Found better path\n";
                     //Recalculated costs and set parent node
                     updateNodeInfo(nodePos, m_ClosedList.back());
                 }
