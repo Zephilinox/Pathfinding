@@ -24,6 +24,8 @@ public:
     bool inMapBounds(sf::Vector2i pos);
     sf::Vector2i worldToMapCoordinates(sf::Vector2f pos);
 
+    void reset();
+
 private:
     void createMap();
 

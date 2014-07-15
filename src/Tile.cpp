@@ -62,7 +62,9 @@ Node& Tile::getNode()
 
 void Tile::reset()
 {
-    m_Node.reset();
+    m_Node.resetCosts();
+    m_Node.resetState();
+    m_Node.resetParent();
     setState(TileState::Empty);
 }
 

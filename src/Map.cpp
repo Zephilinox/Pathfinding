@@ -56,13 +56,7 @@ void Map::update(const float dt, sf::RenderWindow& window)
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
     {
-        for (auto& row : m_Tiles)
-        {
-            for (auto& tile : row)
-            {
-                tile.reset();
-            }
-        }
+        reset();
     }
 
     for (auto& row : m_Tiles)
@@ -126,4 +120,15 @@ bool Map::inMapBounds(sf::Vector2i pos)
 sf::Vector2i Map::worldToMapCoordinates(sf::Vector2f pos)
 {
     return sf::Vector2i(pos.x / Constant::tileSize, pos.y / Constant::tileSize);
+}
+
+void Map::reset()
+{
+    for (auto& row : m_Tiles)
+    {
+        for (auto& tile : row)
+        {
+            tile.reset();
+        }
+    }
 }

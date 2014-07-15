@@ -19,7 +19,7 @@ m_HeuristicCost(0)
 
     updateColour();
 
-    m_F.setFont(m_Font.get());
+    m_F.setFont(m_Font);
     m_G.setFont(m_Font.get());
     m_H.setFont(m_Font.get());
 
@@ -102,6 +102,8 @@ sf::Vector2f Node::getPosition()
 }
 void Node::setParentNodePosition(sf::Vector2i pos)
 {
+    sf::Vector2i thisPos = sf::Vector2i(m_Square.getPosition().x / Constant::tileSize, m_Square.getPosition().y / Constant::tileSize);
+    std::cout << "[" << thisPos.x << ", " << thisPos.y << "] -> [" << pos.x << ", " << pos.y << "]\n";
     m_ParentNodePosition = pos;
 }
 
@@ -110,17 +112,23 @@ sf::Vector2i Node::getParentNodePosition()
     return m_ParentNodePosition;
 }
 
-void Node::reset()
+void Node::resetCosts()
 {
     m_MovementCost = 0;
     m_HeuristicCost = 0;
-    m_ParentNodePosition = sf::Vector2i(-1, -1);
-
-    setState(NodeState::Unknown);
-
     m_F.setString("");
     m_G.setString("");
     m_H.setString("");
+}
+
+void Node::resetState()
+{
+    setState(NodeState::Unknown);
+}
+
+void Node::resetParent()
+{
+    m_ParentNodePosition = sf::Vector2i(-1, -1);
 }
 
 void Node::updateColour()
@@ -135,25 +143,25 @@ void Node::updateColour()
 
         case NodeState::Source:
         {
-            m_Square.setFillColor(sf::Color(100, 200, 255)); //Light Blue
+            m_Square.setFillColor(sf::Color(100, 200, 255, 100)); //Light Blue
             break;
         }
 
         case NodeState::Target:
         {
-            m_Square.setFillColor(sf::Color(255, 100, 100)); //Light Red
+            m_Square.setFillColor(sf::Color(255, 100, 100, 100)); //Light Red
             break;
         }
 
         case NodeState::OpenList:
         {
-            m_Square.setFillColor(sf::Color(255, 200, 100)); //Light Orange
+            m_Square.setFillColor(sf::Color(255, 200, 100, 100)); //Light Orange
             break;
         }
 
         case NodeState::ClosedList:
         {
-            m_Square.setFillColor(sf::Color(100, 255, 200)); //Light Green
+            m_Square.setFillColor(sf::Color(100, 255, 200, 100)); //Light Green
             break;
         }
 

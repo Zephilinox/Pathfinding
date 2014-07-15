@@ -26,6 +26,8 @@ public:
 
 private:
     std::vector<sf::Vector2i> getAdjacentNodes(sf::Vector2i pos);
+    unsigned getLowestScoreNodeIndex(std::vector<sf::Vector2i> nodes);
+    void updateNodeInfo(sf::Vector2i pos, sf::Vector2i parentPos);
 
     Map& m_Map;
 

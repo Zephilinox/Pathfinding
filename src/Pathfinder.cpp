@@ -15,7 +15,7 @@ m_IntercardinalMovementCost(14),
 m_SourceNodePosition(-1, -1),
 m_TargetNodePosition(-1, -1),
 m_MouseClickDelay(sf::seconds(0.3f)),
-m_StepDelay(sf::seconds(0.2f))
+m_StepDelay(sf::seconds(0.01f))
 {
 
 }
@@ -43,7 +43,9 @@ void Pathfinder::update(const float dt, sf::RenderWindow& window)
 
     sf::Vector2i mouseTilePos(sf::Mouse::getPosition(window).x / Constant::tileSize, sf::Mouse::getPosition(window).y / Constant::tileSize);
 
-    if (m_Map.inMapBounds(mouseTilePos))
+    if (m_Map.inMapBounds(mouseTilePos) &&
+            m_OpenList.size() == 0 &&
+            m_ClosedList.size() == 0)
     {
         Tile& t = m_Map.getTile(mouseTilePos);
         Node& n = t.getNode();
@@ -100,17 +102,17 @@ void Pathfinder::update(const float dt, sf::RenderWindow& window)
                 n.setState(NodeState::Unknown);
             }
         }
+    }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
-        {
-            m_OpenList.clear();
-            m_ClosedList.clear();
-        }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
+    {
+        m_OpenList.clear();
+        m_ClosedList.clear();
+    }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
-        {
-            step();
-        }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
+    {
+        step();
     }
 }
 
@@ -143,91 +145,106 @@ void Pathfinder::step()
         return;
     }
 
-    std::cout << "Stepping\n";
+    std::cout << "\nStepping\n";
 
-    std::cout << m_OpenList.size() << " " << m_ClosedList.size() << "\n";
-    if (!m_Map.inMapBounds(m_SourceNodePosition) ||
+    if (!m_Map.inMapBounds(m_SourceNodePosition) || //Make sure the source and target are valid
         !m_Map.inMapBounds(m_TargetNodePosition))
     {
+        std::cout << "Source or Target is invalid\n";
+        std::cout << m_SourceNodePosition.x << ", " << m_SourceNodePosition.y << "\n";
+        std::cout << m_TargetNodePosition.x << ", " << m_TargetNodePosition.y << "\n";
         return;
     }
 
-    if (m_ClosedList.size() != 0 &&
-        m_ClosedList[0] == m_SourceNodePosition &&
-        m_OpenList.size() > 0 &&
-        m_ClosedList.back() != m_TargetNodePosition)
+    std::cout << "Source and Target are valid\n";
+
+    if (m_OpenList.size() == 0 &&
+        m_ClosedList.size() == 0)
     {
-        unsigned lowestFScore = UINT_MAX;
-        unsigned lowestFScoreNode = 0;
-        for (unsigned i = 0; i < m_OpenList.size(); ++i)
-        {
-            Node& n = m_Map.getTile(m_OpenList[i]).getNode();
-            if (n.getHeuristicCost() + n.getMovementCost() < lowestFScore)
-            {
-                lowestFScore = n.getHeuristicCost() + n.getMovementCost();
-                lowestFScoreNode = i;
-            }
-        }
-
-        std::cout << "Lowest F Score = " << lowestFScore << "\n";
-
-        m_ClosedList.push_back(m_OpenList[lowestFScoreNode]);
-        m_OpenList.erase(m_OpenList.begin() + lowestFScoreNode);
-
-        if (m_ClosedList.back() == m_TargetNodePosition)
-        {
-            std::cout << "Found target\n";
-            return;
-        }
-        else
-        {
-            std::cout << m_ClosedList.back().x << ", " <<  m_ClosedList.back().y << " / " << m_TargetNodePosition.x << ", " << m_TargetNodePosition.y << "\n";
-        }
-
-        auto adjacentNodes = getAdjacentNodes(m_ClosedList.back());
-
-        for (auto& nodePos : adjacentNodes)
-        {
-            Node& adjNode = m_Map.getTile(nodePos).getNode();
-
-            if (std::find(m_OpenList.begin(), m_OpenList.end(), nodePos) == m_OpenList.end())
-            {
-                adjNode.setParentNodePosition(m_ClosedList.back());
-                adjNode.setHeuristicCost(calculateHeuristicCost(nodePos, m_TargetNodePosition));
-                adjNode.setMovementCost(calculateMovementCost(m_ClosedList.back(), nodePos) + adjNode.getMovementCost());
-
-                if (adjNode.getState() != NodeState::Source &&
-                    adjNode.getState() != NodeState::Target)
-                {
-                    adjNode.setState(NodeState::OpenList);
-                }
-
-                m_OpenList.push_back(nodePos);
-            }
-            else if (adjNode.getMovementCost() > calculateMovementCost(m_ClosedList.back(), nodePos))
-            {
-                adjNode.setParentNodePosition(m_ClosedList.back());
-                adjNode.setHeuristicCost(calculateHeuristicCost(nodePos, m_TargetNodePosition));
-                adjNode.setMovementCost(calculateMovementCost(m_ClosedList.back(), nodePos) + adjNode.getMovementCost());
-            }
-        }
-    }
-    else if (m_Map.getTile(m_SourceNodePosition).getNode().getState() == NodeState::Source)
-    {
+        std::cout << "Adding source node\n";
         m_OpenList.push_back(m_SourceNodePosition);
-        auto adjacentNodes = getAdjacentNodes(m_OpenList.back());
+    }
+    else if ((m_ClosedList.size() != 0 && //make sure there is an object at the back
+             m_ClosedList.back() == m_TargetNodePosition) || //If the target is in the closed list then we found a path
+             m_OpenList.size() == 0) //If the open list is empty then we have checked the entire map and not found a path
+    {
+        std::cout << "Path found\n";
 
-        m_ClosedList.push_back(m_OpenList.front());
-        m_OpenList.erase(m_OpenList.begin());
-
-        for (auto& nodePos : adjacentNodes)
+        //Reset the nodes we have modified
+        for (sf::Vector2i pos : m_ClosedList)
         {
-            Node& n = m_Map.getTile(nodePos).getNode();
-            n.setState(NodeState::OpenList);
-            n.setParentNodePosition(m_ClosedList.back());
-            n.setHeuristicCost(calculateHeuristicCost(nodePos, m_TargetNodePosition));
-            n.setMovementCost(calculateMovementCost(m_ClosedList.back(), nodePos) + n.getMovementCost());
-            m_OpenList.push_back(nodePos);
+            m_Map.getTile(pos).getNode().resetCosts();
+            m_Map.getTile(pos).getNode().resetState();
+        }
+
+        for (sf::Vector2i pos : m_OpenList)
+        {
+            m_Map.getTile(pos).getNode().resetCosts();
+            m_Map.getTile(pos).getNode().resetState();
+        }
+
+        //Draw the path
+        sf::Vector2i parentPos = m_ClosedList.back();
+        while (m_Map.inMapBounds(parentPos))
+        {
+            std::cout << "Parent Position = [" << parentPos.x << ", " << parentPos.y << "]\n";
+            m_Map.getTile(parentPos).getNode().setState(NodeState::ClosedList);
+            parentPos = m_Map.getTile(parentPos).getNode().getParentNodePosition();
+        }
+
+        //Draw source and target
+        m_Map.getTile(m_ClosedList.front()).getNode().setState(NodeState::Source);
+        m_Map.getTile(m_ClosedList.back()).getNode().setState(NodeState::Target);
+    }
+    else
+    {
+        std::cout << "Finding lowest scored node\n";
+        //Find node in open list with lowest score, and move it to closed list.
+        unsigned lowestScoreNodeIndex = getLowestScoreNodeIndex(m_OpenList);
+        m_ClosedList.push_back(m_OpenList[lowestScoreNodeIndex]);
+
+        {
+            Node& n = m_Map.getTile(m_ClosedList.back()).getNode();
+            if (n.getState() != NodeState::Source && //If the node isn't the source or target node;
+                n.getState() != NodeState::Target)
+            {
+                n.setState(NodeState::ClosedList);
+            }
+        }
+
+        m_OpenList.erase(m_OpenList.begin() + lowestScoreNodeIndex);
+
+        std::cout << "Finding adjacent nodes\n";
+        //Find adjacent nodes of current node
+        auto adjNodePoses = getAdjacentNodes(m_ClosedList.back());
+        for (sf::Vector2i& nodePos : adjNodePoses)
+        {
+            if (m_Map.getTile(nodePos).getState() != TileState::Wall && //Can be walked on
+                std::find(m_ClosedList.begin(), m_ClosedList.end(), nodePos) == m_ClosedList.end()) //is not on the closed list
+            {
+                Node& n = m_Map.getTile(nodePos).getNode();
+
+                if (std::find(m_OpenList.begin(), m_OpenList.end(), nodePos) == m_OpenList.end()) //is not on the open list
+                {
+                    std::cout << "Found undiscovered valid node\n";
+                    //Recalculated costs and set parent node
+                    updateNodeInfo(nodePos, m_ClosedList.back());
+
+                    if (n.getState() != NodeState::Source && //Make sure we don't override the source or target tile.
+                        n.getState() != NodeState::Target)
+                    {
+                        n.setState(NodeState::OpenList);
+                    }
+
+                    m_OpenList.push_back(nodePos);
+                }
+                else if (n.getMovementCost() > calculateMovementCost(m_ClosedList.back(), nodePos))//this path to the node is shorter
+                {
+                    std::cout << "Found better path\n";
+                    //Recalculated costs and set parent node
+                    updateNodeInfo(nodePos, m_ClosedList.back());
+                }
+            }
         }
     }
 }
@@ -259,4 +276,30 @@ std::vector<sf::Vector2i> Pathfinder::getAdjacentNodes(sf::Vector2i pos)
     }
 
     return nodes;
+}
+
+unsigned Pathfinder::getLowestScoreNodeIndex(std::vector<sf::Vector2i> nodes)
+{
+    unsigned lowestScore = UINT_MAX;
+    unsigned lowestScoreNode = 0;
+    for (unsigned i = 0; i < nodes.size(); ++i)
+    {
+        Node& n = m_Map.getTile(m_OpenList[i]).getNode();
+        if (n.getHeuristicCost() + n.getMovementCost() < lowestScore)
+        {
+            lowestScore = n.getHeuristicCost() + n.getMovementCost();
+            lowestScoreNode = i;
+        }
+    }
+
+    return lowestScoreNode;
+}
+
+void Pathfinder::updateNodeInfo(sf::Vector2i pos, sf::Vector2i parentPos)
+{
+    Node& n = m_Map.getTile(pos).getNode();
+
+    n.setHeuristicCost(calculateHeuristicCost(pos, m_TargetNodePosition));
+    n.setMovementCost(calculateMovementCost(parentPos, pos));
+    n.setParentNodePosition(parentPos);
 }

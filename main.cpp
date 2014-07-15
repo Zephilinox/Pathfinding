@@ -19,13 +19,6 @@ Pathfinder pathfinder(map);
 
 int main()
 {
-    /*
-    Remember to separate the actual tile from the path finding, it should not be necessary to have them in one class.
-    The tile holds some kind of entity or terrain, and the nodes hold path finding state
-    path finding can have debug drawing turned on/off because it is independent from the tiles, and it can be done easily.
-    So if a tile is an empty area or a wall, that's fine, but a node should be the source or target, and a node should hold the F, H and G costs
-    */
-
     sf::RenderWindow window(sf::VideoMode(Constant::windowWidth, Constant::windowHeight), "Pathfinding");
 
     sf::Clock frameTime;

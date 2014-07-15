@@ -36,7 +36,9 @@ public:
     void setParentNodePosition(sf::Vector2i pos);
     sf::Vector2i getParentNodePosition();
 
-    void reset();
+    void resetCosts();
+    void resetState();
+    void resetParent();
 
 private:
     void updateColour();
