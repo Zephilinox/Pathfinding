@@ -20,8 +20,8 @@ m_HeuristicCost(0)
     updateColour();
 
     m_F.setFont(m_Font);
-    m_G.setFont(m_Font.get());
-    m_H.setFont(m_Font.get());
+    m_G.setFont(m_Font);
+    m_H.setFont(m_Font);
 
     m_F.setColor(sf::Color::Black);
     m_G.setColor(sf::Color::Black);
